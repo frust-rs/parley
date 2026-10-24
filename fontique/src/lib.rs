@@ -21,6 +21,9 @@
 //! - `fontconfig-dlopen`: Use dlopen to load the fontconfig library.
 //!   This allows Fontique to compile even if the system does not have fontconfig installed,
 //!   although font fallback to system fonts will not work in this case.
+//! - `hvgl`: Keep faces that only have an `hvgl` outline table (Apple's `PingFang` on iOS and macOS 26+)
+//!   instead of dropping them while scanning.
+//!   Such outlines cannot be read by `read-fonts`, so the caller must draw them itself (for example through CoreText).
 //!
 //! At least one of `std` and `libm` is required; `std` overrides `libm`.
 //! Note that Fontique requires that an allocator is available (i.e. it uses [`alloc`][]).

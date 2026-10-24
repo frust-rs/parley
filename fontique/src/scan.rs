@@ -195,14 +195,24 @@ fn scan_memory_impl<'a>(
     Some(())
 }
 
+/// Returns true if a face with the tables reported by `has_table` should be
+/// dropped because its outlines (`hvgl`) cannot be drawn by the usual
+/// glyf/CFF/CFF2 pipeline.
+///
+/// With the `hvgl` feature enabled such faces are kept.
+fn rejects_hvgl(has_table: impl Fn(Tag) -> bool) -> bool {
+    !cfg!(feature = "hvgl") && has_table(Tag::new(b"hvgl"))
+}
+
 fn scan_font<'a>(
     font: FontRef<'a>,
     #[allow(unused)] path: ScanMemoryPathType<'a>,
     index: u32,
     f: &mut impl FnMut(&ScannedFont<'a>),
 ) -> Option<()> {
-    // We can't currently render hvgl fonts so reject them
-    if font.table_data(Tag::new(b"hvgl")).is_some() {
+    // We can't currently render hvgl fonts so reject them, unless the `hvgl`
+    // feature says the caller draws hvgl outlines itself.
+    if rejects_hvgl(|tag| font.table_data(tag).is_some()) {
         return None;
     }
     let name_table = font.name().ok()?;
@@ -309,4 +319,21 @@ fn english_or_first<'a>(names: &name::Name<'a>, id: NameId) -> Option<name::Name
         }
     }
     best_record.and_then(|record| record.string(names.string_data()).ok())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hvgl_only_face_rejection_follows_feature() {
+        let hvgl_only = |tag: Tag| tag == Tag::new(b"hvgl") || tag == Tag::new(b"name");
+        assert_eq!(rejects_hvgl(hvgl_only), !cfg!(feature = "hvgl"));
+    }
+
+    #[test]
+    fn faces_without_hvgl_are_never_rejected() {
+        let glyf = |tag: Tag| tag == Tag::new(b"glyf") || tag == Tag::new(b"name");
+        assert!(!rejects_hvgl(glyf));
+    }
 }

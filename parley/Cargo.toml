@@ -27,6 +27,9 @@ bytemuck = ["fontique/bytemuck", "parlance/bytemuck", "parley_engine/bytemuck"]
 # Enable support for system font backends.
 # This also enables `std`.
 system = ["std", "fontique/system"]
+# Forwarded to `fontique`: keep faces that only have `hvgl` outlines (Apple PingFang).
+# The caller must draw those outlines itself.
+hvgl = ["fontique/hvgl"]
 # Enable dictionary-based line and word breaking for complex scripts (CJK, Thai, Khmer, Lao, Myanmar).
 # When disabled, a lightweight segmenter is used that falls back to character-level breaks for those scripts.
 complex-scripts = ["parley_engine/complex-scripts"]

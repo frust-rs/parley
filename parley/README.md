@@ -125,6 +125,8 @@ The following crate [feature flags](https://doc.rust-lang.org/cargo/reference/fe
 - `complex-scripts`: Enable dictionary-based line and word breaking for complex scripts (CJK, Thai, Khmer, Lao, Myanmar).
   When disabled, a lightweight segmenter is used that falls back to character-level breaks for those scripts.
   See [`DictionaryProvider`][] for full details.
+- `hvgl`: Forwarded to `fontique`, which then keeps faces that only have `hvgl` outlines (Apple's `PingFang` on iOS and macOS 26+).
+  The caller must draw those outlines itself, for example through CoreText.
 
 At least one of `std` and `libm` is required; `std` overrides `libm`.
 Note that Parley requires that an allocator is available (i.e. it uses [`alloc`][]).

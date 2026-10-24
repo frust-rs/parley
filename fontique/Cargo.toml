@@ -23,6 +23,11 @@ std = ["read-fonts/std", "dep:memmap2", "parlance/std"]
 libm = ["read-fonts/libm"]
 # Forwarded to `parlance`, which then implements traits from `bytemuck` on its types.
 bytemuck = ["parlance/bytemuck"]
+# Keep faces that only have an `hvgl` outline table (Apple's PingFang on iOS and
+# macOS 26+) in the collection instead of dropping them while scanning.
+# Such outlines cannot be read by skrifa/read-fonts, so the caller must draw them
+# itself (for example through CoreText).
+hvgl = []
 # Enable support for system font backends.
 # This also enables `std`.
 system = [
